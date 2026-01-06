@@ -4,10 +4,12 @@ import time
 import mujoco
 import mujoco.viewer
 from pathlib import Path
+import r2b
 
+logger = r2b.get_logger(__name__)
 
 for var in os.getenv("PROJECT_VARS", "").split(" "):
-    print(f"{var}: {os.getenv(var, "")}")
+    logger.info(f"{var}: {os.getenv(var, "")}")
 
 
 # 1. Path to your robot model
@@ -15,7 +17,8 @@ for var in os.getenv("PROJECT_VARS", "").split(" "):
 model_path = Path(os.getenv("SO101_DIR", "")) / "Simulation/SO101/so101_new_calib.xml"
 
 if not os.path.exists(model_path):
-    print(f"Error: {model_path} not found. Are you in the right directory?")
+    logger.error(f"Error: {model_path} not found. Are you in the right directory?")
+    logger.critical("Exiting...")
     exit()
 
 # 2. Load the model and data
@@ -25,7 +28,7 @@ data = mujoco.MjData(model)
 # 3. Launch the viewer
 # This opens a window where you can drag joints and see the physics
 with mujoco.viewer.launch_passive(model, data) as viewer:
-    print("MuJoCo Viewer started. You can drag the robot parts with your mouse.")
+    logger.info("MuJoCo Viewer started. You can drag the robot parts with your mouse.")
     
     # Keep the simulation running
     while viewer.is_running():
