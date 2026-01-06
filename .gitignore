@@ -1,0 +1,34 @@
+# --- ROS 2 / Colcon ---
+install/
+build/
+log/
+.catkin_tools/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+.pytest_cache/
+
+# --- C++ / IDEs ---
+*.so
+*.a
+*.o
+.vscode/
+.idea/
+cmake-build-debug/
+CMakeLists.txt.user
+
+# --- Robotics Specifics ---
+*.bag
+*.mcap
+*.log
+# Exclude local hardware calibration files
+config/local_calib_*.yaml
+
+# --- System ---
+.DS_Store
+Thumbs.db
