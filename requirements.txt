@@ -1,4 +1,6 @@
 mujoco~=3.4.0
+lerobot~=0.4.2
 # environment
 dotenv~=0.9.9
 python-dotenv~=1.2.1
+ffmpeg~=7.1.1
