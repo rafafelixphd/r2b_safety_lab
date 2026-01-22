@@ -30,40 +30,43 @@ def main(args):
             env = record_video(env, args)
 
         # R2B Logic: Load existing brain or create new one
+        model = PPO("MlpPolicy", env, verbose=1)
+
         model_path = Path(args.model_path)
         if model_path.with_suffix(".zip").exists():
             logger.info(f"Loading existing model from {model_path}")
-            model = PPO.load(model_path, env=env)
-        else:
-            logger.info("Initializing new PPO model")
-            model = PPO("MlpPolicy", env, verbose=1)
+            if args.pretrained:
+                model = PPO.load(model_path, env=env)
 
-        if args.train:
-            logger.info(f"Training for {args.steps} steps...")
-            model.learn(total_timesteps=args.steps)
-            model.save(model_path)
-            logger.info(f"Model saved to {model_path}")
-
-        observation, info = env.reset()
-        avg_reward = []
-        
+        avg_reward, total_reward, max_actions = [], 0, 0
         for step in range(args.steps):
-            # Use the model to predict the action instead of random sampling
-            action, _states = model.predict(observation, deterministic=True)
-            observation, reward, terminated, truncated, info = env.step(action)
-            
-            avg_reward.append(reward)
-            if terminated or truncated:
-                observation, info = env.reset()
-                
-            if step % (max(1, args.steps // 10)) == 0:
-                logger.info(f"「{step+1}/{args.steps}」| avg_reward: {np.mean(avg_reward):.2f}")
+            episode_over, num_actions = False, 0
+    
+            env.reset()
+            observation, info = env.reset()
+
+            while not episode_over:
+                action, _states = model.predict(observation, deterministic=True)
+                observation, reward, terminated, truncated, info = env.step(action)
+                episode_over = terminated or truncated
+                avg_reward.append(reward)
+                total_reward += reward
+
+                if terminated or truncated:
+                    observation, info = env.reset()
+                num_actions += 1
+
+            if (num_actions > max_actions) or (step % (max(1, args.steps // 10)) == 0):
+                max_actions = max(num_actions, max_actions)
+                logger.info(f"「{step+1}/{args.steps}」| rewards: {total_reward:.2f} | avg: {np.mean(avg_reward):.2f} | max_actions: {max_actions}")
+                logger.info(f"Saving the model.. {model_path}")
+                model.save(model_path)
 
         env.close()
 
     except Exception as e:
-        logger.error(f"Error: {e}")
-        traceback.print_営業()
+        logger.critical(f"Error: {e}")
+        logger.error(f"{traceback.print_exc()=}")
         if env: env.close()
 
 if __name__ == "__main__":
@@ -71,7 +74,8 @@ if __name__ == "__main__":
     arg.add_argument("--steps", type=int, default=5000)
     arg.add_argument("--env", type=str, default="InvertedPendulum-v4")
     arg.add_argument("--train", action="store_true")
-    arg.add_argument("--model_path", type=str, default="r2b_ppo_model")
+    arg.add_argument("--pretrained", action="store_true")
+    arg.add_argument("--model_path", type=str, default=f"{ASSET_DIR}/weights/r2b_ppo_model")
     arg.add_argument("--record", action="store_true")
     arg.add_argument("--video_path", type=str, default=str(ASSET_DIR / "videos"))
     args = arg.parse_args()

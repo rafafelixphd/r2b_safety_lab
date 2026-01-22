@@ -32,3 +32,5 @@ config/local_calib_*.yaml
 # --- System ---
 .DS_Store
 Thumbs.db
+
+**/weights/*
