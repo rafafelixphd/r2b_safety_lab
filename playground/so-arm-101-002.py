@@ -12,9 +12,7 @@ for var in os.getenv("PROJECT_VARS", "").split(" "):
     logger.info(f"{var}: {os.getenv(var, "")}")
 
 
-# 1. Path to your robot model
-# Ensure this matches the filename in the repo (usually 'so101.xml' or 'scene.xml')
-model_path = Path(os.getenv("SO101_DIR", "")) / "Simulation/SO101/so101_new_calib.xml"
+model_path = Path(__file__).parent / "artifacts/scene_001.xml"
 
 if not os.path.exists(model_path):
     logger.error(f"Error: {model_path} not found. Are you in the right directory?")
