@@ -9,7 +9,7 @@ import gymnasium as gym
 logger = r2b.get_logger(__name__)
 
 for var in os.getenv("PROJECT_VARS", "").split(" "):
-    logger.info(f"{var}: {os.getenv(var, "")}")
+    logger.info(f"{var}: {os.getenv(var, '')}")
 
 
 def save_model(env):
