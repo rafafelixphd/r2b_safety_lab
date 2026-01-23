@@ -4,7 +4,7 @@ Ping and control using LeRobot with your existing SO-101 calibration file.
 This demonstrates the proper production way to use FeetechMotorsBus with
 your actual robot calibration.
 """
-
+import argparse
 import sys
 sys.path.insert(0, '/Users/rafaelfelix/Projects/r2b/lerobot/src')
 
@@ -34,17 +34,17 @@ def load_calibration(calibration_path: str) -> dict:
         )
     return calibration
 
-def main():
+def main(port: str):
     # Load your existing calibration
-    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/robots/so101_follower/so_101_follower_001.json"
-    
+    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/so_101_leader_001.json"
+
     logger.info(f"Loading calibration from: {cal_path}")
     calibration = load_calibration(str(cal_path))
     logger.info(f"Loaded calibration for motors: {list(calibration.keys())}")
     
     # Initialize bus with your SO-101 configuration
     bus = FeetechMotorsBus(
-        port="/dev/tty.usbmodem5AAF2631481",
+        port=port,
         motors={
             "shoulder_pan": Motor(1, "sts3215", MotorNormMode.RANGE_M100_100),
             "shoulder_lift": Motor(2, "sts3215", MotorNormMode.RANGE_M100_100),
@@ -57,7 +57,7 @@ def main():
     )
     
     try:
-        logger.info("Connecting to motors...")
+        logger.info(f"Connecting to motors... {port}")
         bus.connect()
         
         # Ping all motors
@@ -85,9 +85,9 @@ def main():
         logger.info("✓ Done! Check your 7.4V/12V power supply if no movement.")
         
     except Exception as e:
-        logger.error(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"Error connecting to motor {port}")
+        # import traceback
+        # traceback.print_exc()
     finally:
         try:
             logger.info("Disconnecting...")
@@ -96,4 +96,8 @@ def main():
             pass
 
 if __name__ == "__main__":
-    main()
+    args = argparse.ArgumentParser()
+    args.add_argument("--port", type=str, default="/dev/tty.usbmodem5AAF2631481")
+    args = args.parse_args()
+    main(args.port)
+    logger.info("complete.")
