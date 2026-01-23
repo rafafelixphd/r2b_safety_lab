@@ -95,6 +95,7 @@ def print_interface(selected_motors, multi_select_mode, step_size, current_posit
     print(" CONTROLS:")
     print("  1-6  : Select Joint (Gripper..Pan)")
     print("  j    : Toggle Multi-Select Mode")
+    print("  c    : Clear Selection")
     print("  <-   : Move Negative")
     print("  ->   : Move Positive")
     print("  9    : Flex (100%)")
@@ -158,8 +159,10 @@ def main():
             # Mode Toggle
             elif key == 'j':
                 multi_select_mode = not multi_select_mode
-                # Optional: clear selection on disable? Or keep?
-                # Keeping current selection feels more natural.
+            
+            # Clear Selection
+            elif key == 'c':
+                selected_motors.clear()
             
             # Step Size
             elif key == '+':
@@ -176,53 +179,28 @@ def main():
                 delta = direction * step_size
                 
                 for name in selected_motors:
-                    # We need to read current target or position to increment
-                    # ideally we track 'goal_position' separately to avoid drift from reading sensors
-                    # but for simple CLI, reading current pos + delta is 'ok', 
-                    # dependent on if we are in position control. 
-                    # FeetechMotorsBus 'write' usually sets Goal_Position.
-                    
-                    # Let's read current 'Present_Position' as base if we don't track state
-                    # But better UX: Track last written goal?
-                    # For now: Read Present Position + Delta.
                     current_pos = bus.read("Present_Position", name)
                     if current_pos is not None:
                         new_pos = current_pos + delta
-                        new_pos = max(-100, min(100, new_pos)) # Safe clamp (though motor limits might exist)
-                        # Gripper is 0-100, others might be -100-100? 
-                        # Config says Gripper: RANGE_0_100, others RANGE_M100_100.
-                        # We should respect that if possible, but the Bus/Motor class handles norm?
-                        # write() usually takes normalised values? 
-                        # ping.py sends 100.0 to gripper.
-                        
+                        new_pos = max(-100, min(100, new_pos))
                         bus.write("Goal_Position", name, new_pos)
-                        # current_positions[name] = new_pos # Optimistic update?
                         
             elif key == '9': # Flex / 100%
-                for name in selected_motors:
+                targets = list(selected_motors) if selected_motors else list(bus.motors.keys())
+                logger.info(f"Moving {len(targets)} motors to 100%...")
+                for name in targets:
                      bus.write("Goal_Position", name, 100.0)
+                     time.sleep(0.5) # One at a time
                      
             elif key == '0': # Reset / Center
-                for name in selected_motors:
-                    # Check motor norm mode? Or just assume 0 is center for -100/100 and 50 is center for 0/100?
-                    # "reset robot (50% position)" prompt says.
-                    # For -100 to 100, 0 is center.
-                    # For 0 to 100, 50 is center.
-                    # Let's look at MOTOR_CONFIG.
-                    # Gripper is 0-100. Others -100-100.
-                    # If prompt says "50% position", maybe it means physical 50% travel?
-                    # If I send 0 to gripper, it opens (or closes). 50 is mid.
-                    # If I send 0 to pan, it is mid.
-                    # Let's try to be smart:
+                targets = list(selected_motors) if selected_motors else list(bus.motors.keys())
+                logger.info(f"Moving {len(targets)} motors to Center...")
+                for name in targets:
                     if name == 'gripper':
                         bus.write("Goal_Position", name, 50.0)
                     else:
-                        bus.write("Goal_Position", name, 0.0) # 0 is center for -100/100 range motors in logic?
-                        # actually MotorNormMode.RANGE_M100_100 means -100 to 100.
-                        # Prompt said "0. reset robot (50% position)".
-                        # It is ambiguous if they mean literally value 50 or "50% of travel".
-                        # 50% of travel for -100..100 is 0.
-                        # I will assume "Center" is the intent.
+                        bus.write("Goal_Position", name, 0.0)
+                    time.sleep(0.5) # One at a time
             
             # Update all positions for display
             # To avoid slow loop, maybe read only occasionally or use a separate thread?
