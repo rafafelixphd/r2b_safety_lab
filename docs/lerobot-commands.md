@@ -14,6 +14,7 @@
 ```bash
     export FOLLOWER_ID="/dev/tty.usbmodem5AAF2631481"
     export LEADER_ID="/dev/tty.usbmodem5AA90240081"
+    # 5AA90240081
 ```
 
 3. Teleoperate
