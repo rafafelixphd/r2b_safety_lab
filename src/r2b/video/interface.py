@@ -4,10 +4,14 @@ import numpy as np
 from abc import ABC, abstractmethod
 from ..logger import get_logger
 from .contants import ColorSpace, OutputFormat
+from PIL import Image
 
 logger = get_logger(namespace="video")
 
 class CameraInterface(ABC):
+    output_fmt = OutputFormat.NUMPY
+    color_mode = ColorSpace.BGR
+    target_size = None
     def __init__(
         self, 
         video_id: int, 
@@ -29,32 +33,24 @@ class CameraInterface(ABC):
             self.frame_idx = 0
             self._running = True 
 
-            self.known_arguments(kwargs)
             self.__dict__.update(kwargs)
+            self.known_arguments(kwargs)
 
     def known_arguments(self, kwargs):
-        self.output_fmt = OutputFormat.NUMPY
-        self.color_mode = ColorSpace.BGR
-        self.target_size = None
         if "output_fmt" in kwargs:
             if isinstance(kwargs["output_fmt"], str):
                 self.output_fmt = OutputFormat[kwargs["output_fmt"].upper()]
-                kwargs.pop("output_fmt")
             else:
                 self.output_fmt = kwargs["output_fmt"]
-                kwargs.pop("output_fmt")
         
         if "color_mode" in kwargs:
             if isinstance(kwargs["color_mode"], str):
                 self.color_mode = ColorSpace[kwargs["color_mode"].upper()]
-                kwargs.pop("color_mode")
             else:
                 self.color_mode = kwargs["color_mode"]
-                kwargs.pop("color_mode")
 
         if "target_size" in kwargs:
             self.target_size = tuple(kwargs["target_size"])
-            kwargs.pop("target_size")
 
         logger.debug(f"Output format: {self.output_fmt}")
         logger.debug(f"Color mode: {self.color_mode}")
@@ -69,13 +65,10 @@ class CameraInterface(ABC):
         if self.target_size:
             frame = cv2.resize(frame, self.target_size, interpolation=cv2.INTER_LINEAR)
         
-        print(self.output_fmt == OutputFormat.PIL, self.output_fmt, OutputFormat.PIL)
         if self.output_fmt == OutputFormat.PIL:
-            logger.info(f"Turning into an Image: {self.output_fmt}")
             return Image.fromarray(frame)
         
-        elif self.output_fmt.value == OutputFormat.JPEG.value:
-            logger.info(f"Turning into a JPEG: {self.output_fmt}")
+        elif self.output_fmt == OutputFormat.JPEG:
             _, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
             return buffer
         return frame
@@ -100,11 +93,9 @@ class CameraInterface(ABC):
         self.frame_idx += 1
         
         if isinstance(raw_data, (list, tuple)):
-            logger.info("Multiple images")
             idx, *frames = raw_data
             return (idx, *(self._transform(f) for f in frames))
         
-        logger.info("Single image")
         return self._transform(raw_data)
 
     def stop(self) -> None:

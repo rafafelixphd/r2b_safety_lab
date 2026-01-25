@@ -13,7 +13,6 @@ class PS4EyeStereoCamera(CameraInterface):
         **kwargs
     ) -> None:
         super().__init__(video_id, width, height, *args, **kwargs)
-        self.__dict__.update(kwargs)
 
     def _process_frame(self, idx, frame):
         left = frame[0:self.h, slice(*self.l_slice)]
