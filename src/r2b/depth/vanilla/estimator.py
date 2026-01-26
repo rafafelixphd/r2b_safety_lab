@@ -1,14 +1,34 @@
 import cv2
 import numpy as np
+import os
 
 class StereoProcessor:
     def __init__(self, width=1264, height=800):
         self.w, self.h = width, height
-        f = 0.3 * self.w
+        
+        # Load Calibration
+        assets_dir = os.path.join(os.path.dirname(__file__), '../assets') # Note: assets is in parent/assets relative to vanilla/
+        try:
+            self.K = np.load(os.path.join(assets_dir, 'param_K.npy'))
+            self.dist = np.load(os.path.join(assets_dir, 'param_dist.npy'))
+        except:
+             # Default synthetic
+            self.K = np.array([[0.3*width, 0, width/2], [0, 0.3*width, height/2], [0,0,1]], dtype=np.float32)
+            self.dist = np.zeros(5)
+
+        # Init Undistort Maps (Full Resolution)
+        self.new_K, roi = cv2.getOptimalNewCameraMatrix(self.K, self.dist, (width, height), 0, (width, height))
+        self.map1, self.map2 = cv2.initUndistortRectifyMap(self.K, self.dist, None, self.new_K, (width, height), cv2.CV_16SC2)
+
+        # Construct Q for DOWNSAMPLED resolution (w/2, h/2) assuming pyrDown
+        fx = self.new_K[0,0] / 2.0
+        cx = self.new_K[0,2] / 2.0
+        cy = self.new_K[1,2] / 2.0
+
         self.Q = np.float32([
-            [1, 0,  0, -0.5 * (self.w // 2)], # Adjusted for downsampling later
-            [0,-1,  0,  0.5 * (self.h // 2)],
-            [0, 0,  0,  f],
+            [1, 0,  0, -cx], 
+            [0,-1,  0,  cy],
+            [0, 0,  0,  fx],
             [0, 0, -1/0.063, 0] # Baseline in meters
         ])
 
@@ -26,9 +46,15 @@ class StereoProcessor:
         self.kernel = np.ones((13,13), np.uint8)
 
     def compute_3d_metrics(self, left, right):
-        # 1. Downsample for speed (as per your original script)
-        l_gray = cv2.pyrDown(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY))
-        r_gray = cv2.pyrDown(cv2.cvtColor(right, cv2.COLOR_BGR2GRAY))
+        # 1. Undistort (Full Res) -> Gray -> Downsample
+        if left.ndim == 3: left = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
+        if right.ndim == 3: right = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
+
+        l_rect = cv2.remap(left, self.map1, self.map2, cv2.INTER_LINEAR)
+        r_rect = cv2.remap(right, self.map1, self.map2, cv2.INTER_LINEAR)
+        
+        l_gray = cv2.pyrDown(l_rect)
+        r_gray = cv2.pyrDown(r_rect)
         
         # 2. Disparity computation
         disp = self.matcher.compute(l_gray, r_gray)

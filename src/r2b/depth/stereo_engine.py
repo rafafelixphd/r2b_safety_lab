@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from typing import Tuple, Dict, Optional
 from .types import DepthData
+import os
 
 class StereoPerceptionEngine:
     """
@@ -39,6 +40,24 @@ class StereoPerceptionEngine:
         self.width = width
         self.height = height
         self.baseline = 0.063 # Meters
+
+        # Load Calibration Assets
+        assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
+        try:
+            self.K = np.load(os.path.join(assets_dir, 'param_K.npy'))
+            self.dist = np.load(os.path.join(assets_dir, 'param_dist.npy'))
+        except Exception as e:
+            # Fallback for basic functionality if assets missing
+            print(f"[StereoEngine] Warning using synthetic calibration: {e}")
+            self.K = np.array([[0.3 * width, 0, width / 2.0],
+                               [0, 0.3 * width, height / 2.0],
+                               [0, 0, 1]], dtype=np.float32)
+            self.dist = np.zeros(5)
+
+        # Precompute Undistortion Maps
+        # alpha=0: crop to valid pixels to avoid black borders (or use 1 to keep all)
+        self.new_K, roi = cv2.getOptimalNewCameraMatrix(self.K, self.dist, (width, height), 0, (width, height))
+        self.map1, self.map2 = cv2.initUndistortRectifyMap(self.K, self.dist, None, self.new_K, (width, height), cv2.CV_16SC2)
         
         # SGBM Configuration
         # P1 and P2 control smoothness. P1 is the penalty on the disparity change by plus or minus 1.
@@ -69,17 +88,15 @@ class StereoPerceptionEngine:
         self.wls_filter.setSigmaColor(wls_sigma)
         
         # Q Matrix Construction
-        # F_x is approximated as 0.3 * width.
-        # This is a SYNTHETIC CALIBRATION. Real-world accuracy requires
-        # intrinsic calibration to determine fx, fy, cx, cy.
-        f = 0.3 * self.width
-        cx = self.width / 2.0
-        cy = self.height / 2.0
+        # Use rectified camera parameters
+        fx = self.new_K[0, 0]
+        cx = self.new_K[0, 2]
+        cy = self.new_K[1, 2]
         
         self.Q = np.float32([
             [1, 0, 0, -cx],
-            [0, -1, 0, cy], # Flip Y for standard convention if needed, or keeping consistent with typical reprojection
-            [0, 0, 0, f],
+            [0, -1, 0, cy], # Flip Y for standard convention
+            [0, 0, 0, fx],
             [0, 0, -1/self.baseline, 0] # 1/Tx -> Disparity to Depth
         ])
         
@@ -104,14 +121,18 @@ class StereoPerceptionEngine:
             right_gray = cv2.cvtColor(right_img, cv2.COLOR_BGR2GRAY)
         else:
             right_gray = right_img
+
+        # Undistort/Rectify Images
+        left_rect = cv2.remap(left_gray, self.map1, self.map2, cv2.INTER_LINEAR)
+        right_rect = cv2.remap(right_gray, self.map1, self.map2, cv2.INTER_LINEAR)
             
         # 1. Compute Disparities
-        left_disp = self.left_matcher.compute(left_gray, right_gray)
-        right_disp = self.right_matcher.compute(right_gray, left_gray)
+        left_disp = self.left_matcher.compute(left_rect, right_rect)
+        right_disp = self.right_matcher.compute(right_rect, left_rect)
         
         # 2. Apply WLS Filter
-        # The left original image guides the filtering
-        filtered_disp = self.wls_filter.filter(left_disp, left_img, disparity_map_right=right_disp)
+        # The left original image (rectified) guides the filtering
+        filtered_disp = self.wls_filter.filter(left_disp, left_rect, disparity_map_right=right_disp)
         
         # 3. Reproject to 3D
         # reprojectImageTo3D expects disparity to be float for precision, 
