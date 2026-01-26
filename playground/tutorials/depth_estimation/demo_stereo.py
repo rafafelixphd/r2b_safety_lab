@@ -31,8 +31,13 @@ def run_interactive_demo():
     print("\n[INFO] Controls:")
     print(" - Adjust trackbars to tune stereo matching.")
     print(" - Press 'q' to exit.")
+    
     import r2b.video
-    camera = r2b.video.PS4EyeStereoCamera(video_id=0)
+
+    import sys
+    camera_id = int(sys.argv[1])
+
+    camera = r2b.video.PS4EyeStereoCamera(video_id=camera_id)
     for idx, left, right in camera:
         # 1. Read Trackbars
         min_disp = cv2.getTrackbarPos("Min Disp", window_name)
