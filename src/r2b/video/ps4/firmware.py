@@ -20,13 +20,16 @@ class PS4EyeFirmwareData:
 
 ps4_cuh_zeh1 = PS4EyeFirmwareData(firmware_version=2.0, id_vendor=0x05a9, id_product=0x058a)
 ps4_cuh_zeh2 = PS4EyeFirmwareData(firmware_version=2.0, id_vendor=0x05a9, id_product=0x058b)
+unknown_dev = PS4EyeFirmwareData(firmware_version=2.0,  id_vendor=0x05a9, id_product=0x0580)
 
+
+__devices__ = [unknown_dev, ps4_cuh_zeh1, ps4_cuh_zeh2]
 
 ASSETS_DIR = Path(__file__).parent / "assets"
 
 class PS4EyeFirmware:
     def __init__(self, interface: PS4EyeFirmwareData, *args, **kwargs):
-
+        logger.info(f'PS4 camera interface found | {interface=}')
         self.dev = usb.core.find(idVendor=interface.id_vendor, idProduct=interface.id_product)
         if self.dev is None:
             raise Exception(f'PS4 camera not found {interface=}')
