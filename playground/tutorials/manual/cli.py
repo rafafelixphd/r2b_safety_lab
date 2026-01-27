@@ -103,7 +103,7 @@ def print_interface(selected_motors, multi_select_mode, step_size, current_posit
     print("  q    : Quit")
     print("-" * 50)
 
-def main():
+def main(driver_id: str):
     # Load calibration
     cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/robots/so101_follower/so_101_follower_001.json"
     if not cal_path.exists():
@@ -115,7 +115,7 @@ def main():
     
     # Initialize bus
     bus = FeetechMotorsBus(
-        port="/dev/tty.usbmodem5AAF2631481",
+        port=driver_id,
         motors=MOTOR_CONFIG,
         calibration=calibration
     )
@@ -223,4 +223,5 @@ def main():
         print("\nDisconnected.")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1])

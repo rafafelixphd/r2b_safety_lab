@@ -22,11 +22,14 @@ lerobot-calibrate \
     --robot.type="so101_follower" \
     --robot.port="$FOLLOWER_ID" \
     --robot.id="so-arm-101-002"
+# To be created here: ~/.cache/huggingface/lerobot/calibration/robots/so101_follower
 
 lerobot-calibrate \
     --teleop.type="so101_leader" \
     --teleop.port="$LEADER_ID" \
     --teleop.id="so-arm-101-002"
+
+# To be created here: ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader
 ```
 
 **4. Teleoperate**
@@ -34,9 +37,10 @@ lerobot-calibrate \
 ```bash
 lerobot-teleoperate \
     --robot.type=so101_follower \
-    --robot.port=so-arm-101-002 \
+    --robot.port=so_101_follower_001 \
     --robot.id=$FOLLOWER_NAME \
     --teleop.type=so101_leader \
     --teleop.port=$LEADER_ID \
-    --teleop.id=so-arm-101-002
+    --teleop.id=so-arm-101-002 \
+
 ```
