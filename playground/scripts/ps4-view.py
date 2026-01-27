@@ -1,7 +1,11 @@
 import cv2
+import sys
 import time
 import numpy as np
 from r2b.video.ps4 import PS4EyeStereoCamera
+from r2b.logger import get_logger
+
+logger = get_logger(namespace="ps4-view")
 
 def draw_overlay(frame, fps, frame_count, width, height):
     # Colors
@@ -40,11 +44,9 @@ def draw_overlay(frame, fps, frame_count, width, height):
 
 
 if __name__ == "__main__":
-    camera = PS4EyeStereoCamera()
-    
-    # Get one frame to determine size
-    # Note: The camera iterator usually handles connection, but we can inspect props after first frame or from config
-    # We will compute size dynamically in loop
+
+    video_id = int(sys.argv[1]) if len(sys.argv) > 1 else 0
+    camera = PS4EyeStereoCamera(video_id=video_id, target_size=(1080,720))
     
     start_time = time.time()
     frames_processed = 0
@@ -75,8 +77,11 @@ if __name__ == "__main__":
             cv2.line(combined, (w//2, 0), (w//2, h), (50, 50, 50), 2)
 
             cv2.imshow("PS4 Stereo Viewer", combined)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            if camera._save():
+                logger.info("Frame saved")
+            if camera._quit():
                 break
+
     except KeyboardInterrupt:
         pass
     finally:
