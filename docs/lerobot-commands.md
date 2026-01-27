@@ -37,10 +37,12 @@ lerobot-calibrate \
 ```bash
 lerobot-teleoperate \
     --robot.type=so101_follower \
-    --robot.port=so_101_follower_001 \
-    --robot.id=$FOLLOWER_NAME \
+    --robot.port=so-arm-101-002 \
+    --robot.id=$FOLLOWER_ID \
     --teleop.type=so101_leader \
     --teleop.port=$LEADER_ID \
     --teleop.id=so-arm-101-002 \
+# Or
 
+lerobot-teleoperate --robot.type=so101_follower --robot.port=$FOLLOWER_ID --robot.id=so-arm-101-002 --teleop.type=so101_leader --teleop.port=$LEADER_ID --teleop.id=so-arm-101-002
 ```
