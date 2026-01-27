@@ -1,5 +1,5 @@
-from .ps4 import PS4EyeStereoCamera
+from . import ps4
 
 __all__ = [
-    "PS4EyeStereoCamera",
+    "ps4",
 ]

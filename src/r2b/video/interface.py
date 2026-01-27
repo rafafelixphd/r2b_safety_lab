@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from ..logger import get_logger
 from .contants import ColorSpace, OutputFormat
 from PIL import Image
+from pathlib import Path
 
 logger = get_logger(namespace="video")
 
@@ -79,7 +80,10 @@ class CameraInterface(ABC):
             raise StopIteration
 
         ret, frame = self.cap.read()
-
+        if not ret:
+            self.release()
+            raise StopIteration(f"Streaming 「{self.video_id}」 has stopped unexpectedly.")
+        
         if self.frame_idx == 0:
             self.width = frame.shape[1]
             self.height = frame.shape[0]
@@ -131,6 +135,29 @@ class CameraInterface(ABC):
     def current_frame(self) -> tuple[int, np.ndarray, np.ndarray]:
         return next(self)
 
+    def __save_frame(self, filepath: str = "/tmp/frame.jpg" ,*args, **kwargs):
+        output = self.current_frame[1:]
+        outputfile = Path(filepath)
+        if not outputfile.parent.exists():
+            outputfile.parent.mkdir(parents=True, exist_ok=True)
+        
+        if len(output) == 1:
+            cv2.imwrite(str(outputfile), output.pop())
+            return True
+
+        for idx, frame in enumerate(output):
+            if self.output_fmt == OutputFormat.NUMPY:
+                cv2.imwrite(str(outputfile.with_name(f"{outputfile.stem}_{idx}{outputfile.suffix}")), frame)
+            elif self.output_fmt == OutputFormat.JPEG:
+                with open(str(outputfile.with_name(f"{outputfile.stem}_{idx}{outputfile.suffix}")), "wb") as f:
+                    f.write(frame)
+            elif self.output_fmt == OutputFormat.PIL:
+                frame.save(str(outputfile.with_name(f"{outputfile.stem}_{idx}{outputfile.suffix}")))
+            else:
+                raise ValueError(f"Unsupported output format: {self.output_fmt}")
+        
+        return True
+
     def __enter__(self):
         return self
 
@@ -145,3 +172,27 @@ class CameraInterface(ABC):
         if self.cap.isOpened():
             self.cap.release()
             logger.info(f"Camera {self.video_id} released.")
+
+    def _save(self, *args, **kwargs):
+        '''
+        Save the current frame to a file.
+        kwargs:
+            - keybindings: str, default="s"
+        '''
+        try:
+            if cv2.waitKey(1) & 0xFF == ord(kwargs.get("keybinding", "s")):
+                return self.__save_frame(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error saving frame: {e}")
+        return False
+
+    def _quit(self, *args, **kwargs):
+        '''
+        Quit the program.
+        kwargs:
+            - keybindings: str, default="q" or "esc"
+        '''
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord(kwargs.get("keybinding", "q")) or key == 27:
+            return True
+        return False

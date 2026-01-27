@@ -15,7 +15,7 @@ for idx, left, right in camera:
     depth_color = cv2.applyColorMap(depth_vis, cv2.COLORMAP_OCEAN)
     
     # Overlay metrics (R2B Safety Style)
-    display = cv2.resize(left, (640, 400))
+    display = cv2.resize(left, (1080, 720), interpolation=cv2.INTER_AREA)
     cv2.putText(display, f"MIN: {min_d:.2f}m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
     cv2.putText(display, f"AVG: {avg_d:.2f}m", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
     
