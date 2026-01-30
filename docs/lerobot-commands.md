@@ -18,16 +18,8 @@
 **3. Calibrate**
 
 ```bash
-lerobot-calibrate \
-    --robot.type="so101_follower" \
-    --robot.port="$FOLLOWER_ID" \
-    --robot.id="so-arm-101-002"
-# To be created here: ~/.cache/huggingface/lerobot/calibration/robots/so101_follower
-
-lerobot-calibrate \
-    --teleop.type="so101_leader" \
-    --teleop.port="$LEADER_ID" \
-    --teleop.id="so-arm-101-002"
+lerobot-calibrate --robot.type="so101_follower" --robot.port="$FOLLOWER_PORT" --robot.id="v2"
+lerobot-calibrate --teleop.type="so101_leader" --teleop.port="$LEADER_PORT" --teleop.id="v2"
 
 # To be created here: ~/.cache/huggingface/lerobot/calibration/teleoperators/so101_leader
 ```
