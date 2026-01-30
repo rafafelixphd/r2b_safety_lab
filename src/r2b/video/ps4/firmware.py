@@ -31,6 +31,7 @@ class PS4EyeFirmware:
     def __init__(self, interface: PS4EyeFirmwareData, *args, **kwargs):
         logger.info(f'PS4 camera interface found | {interface=}')
         self.dev = usb.core.find(idVendor=interface.id_vendor, idProduct=interface.id_product)
+        
         if self.dev is None:
             raise Exception(f'PS4 camera not found {interface=}')
         logger.info(f'PS4 camera interface found | {interface=}')

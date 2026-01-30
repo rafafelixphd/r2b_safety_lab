@@ -97,7 +97,14 @@ def main(port: str):
 
 if __name__ == "__main__":
     args = argparse.ArgumentParser()
+    
     args.add_argument("--port", type=str, default="/dev/tty.usbmodem5AAF2631481")
+    args.add_argument("--id", type=str, default="")
     args = args.parse_args()
-    main(args.port)
+    logger.info(f"{args=}")
+
+    if args.id != "":
+        main(f"/dev/tty.usbmodem{args.id.strip()}1")
+    else:
+        main(args.port)
     logger.info("complete.")
