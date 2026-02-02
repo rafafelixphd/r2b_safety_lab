@@ -16,6 +16,7 @@ from lerobot.teleoperators.so101_leader.so101_leader import SO101Leader
 
 import mujoco
 import numpy as np
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -30,17 +31,36 @@ leader_port = os.environ.get("LEADER_PORT")
 leader_id = os.environ.get("LEADER_ID")
 
 # MuJoCo Setup
-# Using a relative path that should be valid if running from project root or playground
-# Ideally this should be more robust, but hardcoding for the known path for now
-MODEL_PATH = "lerobot/SO101/so101_new_calib.xml" 
-if not os.path.exists(MODEL_PATH):
-    # Fallback to absolute path search or error
-    logger.warning(f"MuJoCo model not found at {MODEL_PATH}. Visualization disabled.")
+so101_dir = os.environ.get("SO101_DIR")
+candidate_paths = [
+    "lerobot/SO101/so101_new_calib.xml",
+    "SO-ARM100/Simulation/SO101/so101_new_calib.xml",
+    "r2b_safety_lab/playground/artifacts/so101_new_calib.xml",
+    # Try relative to current script
+    os.path.join(os.path.dirname(__file__), "../../../lerobot/SO101/so101_new_calib.xml")
+]
+
+if so101_dir:
+    candidate_paths.insert(0, os.path.join(so101_dir, "Simulation/SO101/so101_new_calib.xml"))
+
+model_path = None
+for path in candidate_paths:
+    # Check both absolute (if path starts with /) and relative to CWD
+    p = Path(path)
+    if p.exists():
+        model_path = p
+        break
+    # Check relative to repo root (assuming git root is CWD common case, but let's try going up)
+    # This is handled mostly by running from root, but let's be safe.
+
+if not model_path:
+    logger.warning("MuJoCo model not found. Visualization disabled. Searched paths: " + str(candidate_paths))
     mj_model = None
     mj_data = None
     renderer = None
 else:
-    mj_model = mujoco.MjModel.from_xml_path(MODEL_PATH)
+    logger.info(f"Loading MuJoCo model from: {model_path}")
+    mj_model = mujoco.MjModel.from_xml_path(str(model_path))
     mj_data = mujoco.MjData(mj_model)
     renderer = mujoco.Renderer(mj_model, height=480, width=640)
 
@@ -95,19 +115,6 @@ def robot_loop():
     except Exception as e:
         logger.error(f"Failed to connect to leader robot: {e}")
 
-    # For mapping motor names to qpos indices, we might need a mapping.
-    # The SO101 model likely uses joint names that match the config.
-    # If not, we iterate joints.
-    joint_names = [f"joint_{i}" for i in range(1, 7)] # Assumption based on usual naming 
-    # Or inspecting model:
-    if mj_model:
-        # Construct map from robot motor key to qpos address
-        # Robot keys: "shoulder_pan.pos", etc.
-        # Check standard names. Typically SO101Follower uses descriptive names.
-        # Let's try to map by order or known names if possible.
-        # For now, simplistic mapping:
-        pass
-
     while True:
         try:
             # Teleoperation Logic
@@ -135,22 +142,11 @@ def robot_loop():
                 
                 # Update Simulation
                 if mj_model and mj_data and renderer:
-                    # Map state_data to qpos
-                    # Available keys in state example: 'shoulder_pan.pos', 'shoulder_lift.pos', ...
-                    # Model joints: usually named similarly or indexed.
-                    # Let's look up joint ids by name.
-                    # Common mapping for SO-100/101:
-                    # 'shoulder_pan' -> 'prop_shoulder_pan' or just 'shoulder_pan'
-                    
-                    # NOTE: To simple this, we rely on the fact that `state_data` has the values.
-                    # We need to know the order or names in XML.
-                    # Assuming names match for now.
                     for name, value in state_data.items():
                         if name.endswith(".pos"):
                             joint_name = name.replace(".pos", "")
                             # Try to find joint in model
                             try:
-                                # MuJoCo names might differ slightly, trying direct match
                                 j_id = mujoco.mj_name2id(mj_model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
                                 if j_id != -1:
                                     # qpos address
@@ -162,10 +158,7 @@ def robot_loop():
                     mujoco.mj_forward(mj_model, mj_data)
                     renderer.update_scene(mj_data)
                     img = renderer.render()
-                    # Img is RGB. Convert to BGR for standard OpenCV usage if needed, 
-                    # but here we just encode to jpg.
-                    # cv2.imencode expects BGR usually if input is numpy.
-                    # renderer.render returns (H,W,3) RGB.
+                    # Convert RGB to BGR for OpenCV
                     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                     
                     with sim_lock:

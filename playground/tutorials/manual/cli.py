@@ -103,10 +103,19 @@ def print_interface(selected_motors, multi_select_mode, step_size, current_posit
     print("  q    : Quit")
     print("-" * 50)
 
-def main(driver_id: str):
+def main(driver_id: str, robot_type: str = "follower", calibration_version: str = "v3"):
+    '''
+    robot_type = follower or leader
+    calibration_version = v3 or v2
+    '''
     # Load calibration
-    # cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/robots/so101_follower/v3.json"
-    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/v2.json"
+    if robot_type == "follower":
+        cal_path = Path.home() / f".cache/huggingface/lerobot/calibration/robots/so101_follower/{calibration_version}.json"
+    elif robot_type == "leader":
+        cal_path = Path.home() / f".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/{calibration_version}.json"
+    else:
+        logger.error(f"Invalid robot type: {robot_type}")
+        return
     if not cal_path.exists():
         logger.error(f"Calibration file not found at: {cal_path}")
         return
@@ -225,4 +234,5 @@ def main(driver_id: str):
 
 if __name__ == "__main__":
     import sys
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
+
