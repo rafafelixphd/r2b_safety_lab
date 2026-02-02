@@ -18,71 +18,99 @@
       h1 {
         color: #4caf50;
       }
-      .container {
-        display: flex;
-        gap: 20px;
-        width: 100%;
-        max-width: 1200px;
-      }
-      .video-container {
-        flex: 2;
-        background: #000;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        text-align: center;
-      }
-      .video-container img {
-        max-width: 100%;
-        height: auto;
-      }
-      .state-container {
-        flex: 1;
-        background: #2d2d2d;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        overflow-y: auto;
-        max-height: 600px;
-      }
-      .state-item {
-        margin-bottom: 15px;
-        border-bottom: 1px solid #444;
-        padding-bottom: 10px;
-      }
-      .state-label {
-        font-weight: bold;
-        color: #88c0d0;
-        display: block;
-        margin-bottom: 5px;
-      }
-      .state-value {
-        font-family: "Courier New", Courier, monospace;
-        color: #a3be8c;
-      }
-      .controls {
-        margin-top: 20px;
-        padding: 20px;
-        background: #2d2d2d;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 1200px;
-        text-align: center;
-      }
-      .control-help {
-        color: #aaa;
-        font-size: 0.9em;
-      }
+            .container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        }
+        .video-wrapper {
+            flex: 2;
+            display: flex;
+            gap: 20px;
+            flex-direction: row;
+        }
+        .video-container {
+            flex: 1;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-align: center;
+            position: relative;
+        }
+        .video-container h4 {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .video-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .state-container {
+            flex: 1;
+            min-width: 300px; /* Ensure state panel doesn't get too squashed */
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        .state-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        .state-label {
+            font-weight: bold;
+            color: #88c0d0;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .state-value {
+            font-family: 'Courier New', Courier, monospace;
+            color: #a3be8c;
+        }
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: #2d2d2d;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 1400px;
+            text-align: center;
+        }
+        .control-help {
+            color: #aaa;
+            font-size: 0.9em;
+        }
     </style>
   </head>
   <body>
     <h1>R2B Teleoperation Dashboard</h1>
-
+    
     <div class="container">
-      <div class="video-container">
-        <img src="/video_feed" alt="Robot Camera Feed" />
-      </div>
-
+        <div class="video-wrapper">
+            <div class="video-container">
+                <h4>Rear Camera</h4>
+                <img src="/video_feed" alt="Robot Camera Feed">
+            </div>
+            <div class="video-container">
+                <h4>Digital Twin (MuJoCo)</h4>
+                <img src="/simulation_feed" alt="Simulation Feed">
+            </div>
+        </div>
+        
         <div class="state-container" id="state-panel">
             <h3>Robot State</h3>
             <div id="connection-status">Follower: Connecting...</div>
