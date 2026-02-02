@@ -105,7 +105,8 @@ def print_interface(selected_motors, multi_select_mode, step_size, current_posit
 
 def main(driver_id: str):
     # Load calibration
-    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/robots/so101_follower/so_101_follower_001.json"
+    # cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/robots/so101_follower/v3.json"
+    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/v2.json"
     if not cal_path.exists():
         logger.error(f"Calibration file not found at: {cal_path}")
         return

@@ -36,7 +36,7 @@ def load_calibration(calibration_path: str) -> dict:
 
 def main(port: str):
     # Load your existing calibration
-    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/so_101_leader_001.json"
+    cal_path = Path.home() / ".cache/huggingface/lerobot/calibration/teleoperators/so101_leader/v2.json"
 
     logger.info(f"Loading calibration from: {cal_path}")
     calibration = load_calibration(str(cal_path))
