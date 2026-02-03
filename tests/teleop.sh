@@ -23,7 +23,7 @@ lerobot-record \
     --display_data=true \
     --dataset.push_to_hub=false \
     --dataset.single_task="Grab the red cylinder" \
-    --dataset.repo_id=local/data-collection" \
-    --dataset.num_episodes=1
+    --dataset.repo_id="local/data-collection" \
+    --dataset.num_episodes=10
 
 
