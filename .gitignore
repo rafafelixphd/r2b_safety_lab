@@ -3,6 +3,7 @@ install/
 build/
 log/
 .catkin_tools/
+outputs/
 
 # --- Python ---
 __pycache__/
