@@ -192,14 +192,14 @@ def main(driver_id: str, robot_type: str = "follower", calibration_version: str 
                     current_pos = bus.read("Present_Position", name)
                     if current_pos is not None:
                         new_pos = current_pos + delta
-                        new_pos = max(-100, min(100, new_pos))
+                        new_pos = max(-99, min(99, new_pos))
                         bus.write("Goal_Position", name, new_pos)
                         
             elif key == '9': # Flex / 100%
                 targets = list(selected_motors) if selected_motors else list(bus.motors.keys())
                 logger.info(f"Moving {len(targets)} motors to 100%...")
                 for name in targets:
-                     bus.write("Goal_Position", name, 100.0)
+                     bus.write("Goal_Position", name, 99.0)
                      time.sleep(0.5) # One at a time
                      
             elif key == '0': # Reset / Center
@@ -209,7 +209,7 @@ def main(driver_id: str, robot_type: str = "follower", calibration_version: str 
                     if name == 'gripper':
                         bus.write("Goal_Position", name, 50.0)
                     else:
-                        bus.write("Goal_Position", name, 0.0)
+                        bus.write("Goal_Position", name, 1.0)
                     time.sleep(0.5) # One at a time
             
             # Update all positions for display

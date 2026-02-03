@@ -20,12 +20,12 @@ lerobot-record \
     --teleop.type=so101_leader \
     --teleop.port=$LEADER_PORT \
     --teleop.id=$LEADER_ID \
-    --robot.cameras='{ front: {type: opencv, index_or_path: 1, width: 3448, height: 808, fps: 30}}' \
+    --robot.cameras='{ front: {type: opencv, index_or_path: $FOLLOWER_CAMERA_INDEX, width: 3448, height: 808, fps: 30}}' \
     --display_data=true \
     --dataset.push_to_hub=false \
     --dataset.single_task="Grab the red cylinder" \
     --dataset.repo_id="local/data-collection" \
-    --dataset.num_episodes=10 \
+    --dataset.num_episodes=5 \
     --dataset.video_encoding_batch_size=5
 
 
