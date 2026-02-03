@@ -19,6 +19,9 @@ By the end of Q1 2026, the robot will use a real-time **Digital Twin** to predic
 
 ![alt text](assets/bench-v1-stereo-camera.jpg)
 
+An illustration of the SO-ARM101 components
+![alt text](assets/so-arm-101-illustration.jpg)
+
 ### 🧠 Phase 2: The Digital Twin (February)
 
 - **Status:** 🔵 **In Progress**

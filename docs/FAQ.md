@@ -17,6 +17,10 @@ Note, that you will find in `usb` and `csi` versions. The `csi` is common to run
 
 > More about cameras usage: https://huggingface.co/docs/lerobot/cameras
 
+- Innomaker U20CAM-1080P (27mm holes)
+- Innomaker Day&Night Vision (34mm holes)
+- Generic webcam
+
 ### Power Supply Requirements
 
 The standard power supply for the robotic arm is a `5V 2A Power Supply`.

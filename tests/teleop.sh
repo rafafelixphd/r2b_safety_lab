@@ -10,6 +10,7 @@ lerobot-record \
   --dataset.num_episodes=5 \
   --dataset.push_to_hub=false \
   --dataset.single_task="Grab the red cylinder" \
+  --dataset.video_encoding_batch_size=5 \
   --display_data=true
 
 lerobot-record \
@@ -24,6 +25,9 @@ lerobot-record \
     --dataset.push_to_hub=false \
     --dataset.single_task="Grab the red cylinder" \
     --dataset.repo_id="local/data-collection" \
-    --dataset.num_episodes=10
+    --dataset.num_episodes=10 \
+    --dataset.video_encoding_batch_size=5
+
+
 
 
