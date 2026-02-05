@@ -31,3 +31,23 @@ lerobot-record \
 
 
 
+# Replay the data collection
+lerobot-replay \
+    --robot.type=so101_follower \
+    --robot.port=$FOLLOWER_PORT \
+    --robot.id=$FOLLOWER_ID \
+    --dataset.repo_id="local/data-collection" \
+    --dataset.episode=0 \
+    --display_data=true 
+
+
+
+lerobot-train \
+  --dataset.repo_id="local/data-collection" \
+  --policy.type=act \
+  --output_dir=outputs/train/act_so101_test \
+  --job_name=act_so101_test \
+  --policy.device=cuda \
+  --wandb.enable=true \
+  --policy.repo_id="local/my_policy"
+
