@@ -10,4 +10,13 @@ ffmpeg~=1.4
 gym-aloha~=0.1.3
 gymnasium~=1.2.3
 placo~=0.9.20
-feetech-servo-sdk~1.0.0
+feetech-servo-sdk~=1.0.0
+av~=15.1.0
+
+# Mac users (get standard PyPI wheels, which support MPS acceleration)
+torch~=2.7.1; sys_platform == 'darwin'
+torchvision~=0.22.1; sys_platform == 'darwin'
+
+# Linux users (this still defaults to PyPI's CUDA/heavy wheels unless they manually use the cpu index)
+# torch~=2.7.1; sys_platform == 'linux'
+# torchvision~=0.22.1; sys_platform == 'linux'
