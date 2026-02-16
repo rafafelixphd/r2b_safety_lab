@@ -48,7 +48,7 @@ echo "Logging in to Hugging Face..."
     exit 1
 }
 
-
+echo "Starting training..."
 # Start training
 lerobot-train \
   --dataset.repo_id="$HF_USER/$DATASET_NAME" \
