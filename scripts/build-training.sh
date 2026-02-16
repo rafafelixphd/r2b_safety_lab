@@ -6,7 +6,8 @@
 
 source ~/.localrc
 
-export REPO_DIR:="${REPO_DIR:-/workspace/bench/r2b_safety_lab}"
+REPO_DIR=${REPO_DIR:-/workspace/bench/r2b_safety_lab}
+export REPO_DIR
 
 if [ ! -d "${REPO_DIR}" ]; then
     echo "Error: ${REPO_DIR} not found"
