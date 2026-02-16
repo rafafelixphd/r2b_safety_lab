@@ -77,7 +77,7 @@ lerobot-train \
   --policy.repo_id="${HF_USER}/${POLICY_NAME}" \
   --policy.private=true \
   --policy.push_to_hub=true \
-  --batch_size="${BATCH_SIZE}" \
+  --batch_size=${BATCH_SIZE:-16} \
   --num_workers=8 \
   --save_freq=5000 \
   --log_freq=100 \
