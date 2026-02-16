@@ -31,4 +31,15 @@ echo "Updating r2b_safety_lab..."
     echo "Error updating r2b_safety_lab"
 }
 
+mkdir --parents /root/.cache/huggingface/lerobot/rafafelixphd/
+ln -s /workspace/dataset/* /root/.cache/huggingface/lerobot/rafafelixphd/
+
+
+if [ ! -d "/workspace/envs/.env" ]; then
+    echo "Creating .env file..."
+    python -m venv /workspace/envs/.env
+    source /workspace/envs/.env/bin/activate
+fi
+
+cp /workspace/bench/r2b_safety_lab/scripts/.localrc ~/.localrc
 echo "Ready to work!"

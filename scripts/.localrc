@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ $SHELL == *"zsh"* ]]; then
     # macOS / zsh
     export PS1='%F{cyan}%n%f@%F{yellow}%1~%f %# '
@@ -5,3 +7,5 @@ else
     # Linux / bash
     export PS1='\[\033[36m\]\u\[\033[0m\]@\[\033[33m\]\W\[\033[0m\] \$ '
 fi
+
+source ~/workspace/envs/.env/bin/activate

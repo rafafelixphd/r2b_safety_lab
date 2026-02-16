@@ -4,22 +4,20 @@
 
 set -e
 
+source ~/.localrc
+
 echo "=== LeRobot RunPod Training ==="
 
+DATASET_NAME:="${DATASET_NAME:-dataset-trial-1}"
+
 # Create dataset symlink if it doesn't exist
-if [ ! -L "/root/.cache/huggingface/lerobot/local/data-collection" ]; then
+if [ ! -L "/root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME" ]; then
     echo "Creating dataset symlink..."
-    mkdir -p /root/.cache/huggingface/lerobot/local
-    ln -s /workspace/datasets/lerobot/local/data-collection \
-          /root/.cache/huggingface/lerobot/local/data-collection
+    mkdir -p /root/.cache/huggingface/lerobot/$HF_USER
+    ln -s /workspace/datasets/$DATASET_NAME \
+          /root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME
     echo "✓ Symlink created"
 fi
-
-# Verify dataset is accessible
-echo "Verifying dataset..."
-python -c "from lerobot.common.datasets.factory import make_dataset; \
-           ds = make_dataset('local/data-collection'); \
-           print(f'✓ Dataset loaded: {len(ds)} samples, {ds.meta.total_episodes} episodes')"
 
 # Get current timestamp for job name
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -31,17 +29,17 @@ echo ""
 
 # Start training
 lerobot-train \
-  --dataset.repo_id="local/data-collection" \
+  --dataset.repo_id="$HF_USER/$DATASET_NAME" \
   --policy.type=act \
   --output_dir=/workspace/outputs/train/act_so101_runpod \
   --job_name=act_so101_runpod_${TIMESTAMP} \
   --policy.device=cuda \
   --wandb.enable=true \
   --wandb.project=lerobot-so101 \
-  --policy.repo_id="local/my_policy" \
+  --policy.repo_id="$HF_USER/policy-1" \
   --batch_size=16 \
   --num_workers=8 \
-  --save_freq=10000 \
+  --save_freq=5000 \
   --log_freq=100 \
   --steps=100000
 
