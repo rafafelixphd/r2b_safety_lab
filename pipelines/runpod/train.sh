@@ -27,13 +27,41 @@ else
     log_info "Dataset symlink valid."
 fi
 
-# Get current timestamp for job name
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-JOB_NAME="act_so101_runpod_${TIMESTAMP}"
-OUTPUT_PATH="${OUTPUT_ROOT}/act_so101_runpod"
+# Check for resume flag
+RESUME=false
+if [[ "$1" == "--resume" ]]; then
+    RESUME=true
+fi
 
-log_info "Job name: ${JOB_NAME}"
-log_info "Output dir: ${OUTPUT_PATH}"
+if [ "$RESUME" = true ]; then
+    log_info "Resuming latest training job..."
+    # Find the latest directory matching the pattern in OUTPUT_ROOT
+    LATEST_JOB_DIR=$(find "${OUTPUT_ROOT}" -maxdepth 1 -type d -name "act_so101_runpod_*" | sort -r | head -n 1)
+
+    if [ -z "$LATEST_JOB_DIR" ]; then
+        log_error "No previous job found to resume in ${OUTPUT_ROOT}"
+        exit 1
+    fi
+
+    OUTPUT_PATH="${LATEST_JOB_DIR}"
+    # Extract job name from directory name
+    JOB_NAME=$(basename "${OUTPUT_PATH}")
+    
+    log_info "Resuming Job: ${JOB_NAME}"
+    log_info "Output dir: ${OUTPUT_PATH}"
+    
+    EXTRA_ARGS="--resume=true"
+else
+    # New training job
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    JOB_NAME="act_so101_runpod_${TIMESTAMP}"
+    OUTPUT_PATH="${OUTPUT_ROOT}/${JOB_NAME}"
+    
+    log_info "Job name: ${JOB_NAME}"
+    log_info "Output dir: ${OUTPUT_PATH}"
+    
+    EXTRA_ARGS=""
+fi
 
 log_info "Starting training..."
 
@@ -49,11 +77,12 @@ lerobot-train \
   --policy.repo_id="${HF_USER}/${POLICY_NAME}" \
   --policy.private=true \
   --policy.push_to_hub=true \
-  --batch_size=16 \
+  --batch_size="${BATCH_SIZE}" \
   --num_workers=8 \
   --save_freq=5000 \
   --log_freq=100 \
-  --steps=100000
+  --steps=100000 \
+  ${EXTRA_ARGS}
 
 log_success "=== Training Complete at $(date) ==="
 log_info "Checkpoints saved to: ${OUTPUT_PATH}"
