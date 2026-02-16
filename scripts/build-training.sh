@@ -39,8 +39,8 @@ echo "Logging in to Hugging Face..."
 }
     
 echo "Checking dataset"
-DATASET_DIR:=${DATASET_DIR:-/workspace/dataset/}
-DATASET_NAME:=${DATASET_NAME:-dataset-trial-1}
+DATASET_DIR=${DATASET_DIR:-/workspace/dataset/}
+DATASET_NAME=${DATASET_NAME:-dataset-trial-1}
 
 if [[ ! -d "$DATASET_DIR/$DATASET_NAME" ]]; then
     echo "Downloading $DATASET_NAME..."
