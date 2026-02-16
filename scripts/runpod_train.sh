@@ -15,7 +15,7 @@ HF_USER=${HF_USER:-rafafelixphd}
 if [ ! -L "/root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME" ]; then
     echo "Creating dataset symlink..."
     mkdir -p /root/.cache/huggingface/lerobot/$HF_USER
-    ln -s /workspace/datasets/$DATASET_NAME \
+    ln -s /workspace/dataset/$DATASET_NAME \
           /root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME
     echo "✓ Symlink created"
 fi

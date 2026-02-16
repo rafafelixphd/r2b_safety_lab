@@ -6,7 +6,7 @@
 
 apt-get update
 
-if [ ! $(which htop) ]; then
+if ! command -v htop &> /dev/null; then
     apt-get install -y htop
 fi
 

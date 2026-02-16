@@ -37,14 +37,15 @@ DATASET_NAME:=${DATASET_NAME:-dataset-trial-1}
 
 if [[ ! -d "$DATASET_DIR/$DATASET_NAME" ]]; then
     echo "Downloading $DATASET_NAME..."
-    hf download $HF_USER/$DATASET_NAME --repo-type dataset --local-dir $DATASET_DIR
+    hf download $HF_USER/$DATASET_NAME --repo-type dataset --local-dir $DATASET_DIR/$DATASET_NAME
 else
     echo "$DATASET_NAME already exists at $DATASET_DIR/$DATASET_NAME"
 fi
 
 echo "Linking dataset to Hugging Face cache..."
 mkdir --parents /root/.cache/huggingface/lerobot/$HF_USER/
-ln -s /workspace/dataset/* /root/.cache/huggingface/lerobot/$HF_USER/
+ln -s $DATASET_DIR/$DATASET_NAME /root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME
+
 echo "✓ Symlink created"
 
 echo "Ready to train!"
