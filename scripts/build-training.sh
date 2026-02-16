@@ -4,12 +4,15 @@
 cp /workspace/.ssh/* ~/.ssh/
 chmod 600 ~/.ssh/*
 
-git clone git@github.com:rafafelixphd/r2b_safety_lab.git /workspace/bench/ --branch dev
+if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
+    git clone git@github.com:rafafelixphd/r2b_safety_lab.git /workspace/bench/r2b_safety_lab --branch dev
+fi
 
-hf auth login --token $HF_TOKEN
 
 cd /workspace/bench/r2b_safety_lab
 
-source /workspace/bench/r2b_safety_lab/scripts/.localrc
+source scripts/.localrc
 
 pip install -e .[train]
+
+hf auth login --token $HF_TOKEN
