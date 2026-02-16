@@ -1,7 +1,14 @@
 #/bin/bash
+#
+# bash /workspace/bench/r2b_safety_lab/scripts/init.sh
+# bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
+#
+
 source /workspace/bench/r2b_safety_lab/scripts/.localrc
 
+
 echo "Installing dependencies..."
+cd /workspace/bench/r2b_safety_lab
 pip install -e .[train]
 
 echo "Logging in to Hugging Face..."
