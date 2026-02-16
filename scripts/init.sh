@@ -4,8 +4,16 @@
 # bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
 #
 echo "Copying SSH keys..."
-cp /workspace/.ssh/* ~/.ssh/
-chmod 600 ~/.ssh/*
+{
+    cp /workspace/.ssh/* ~/.ssh/
+    chmod 600 ~/.ssh/*
+    if [ ! -f "~/.ssh/id_ed25519" ]; then
+        echo "[Error] SSH key not found" && exit 1
+    fi
+} || {
+    echo "[Error] Error copying SSH keys"
+    exit 1
+}
 
 echo "Cloning r2b_safety_lab..."
 if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
