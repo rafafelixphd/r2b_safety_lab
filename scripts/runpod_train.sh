@@ -28,10 +28,6 @@ echo "Job name: act_so101_runpod_${TIMESTAMP}"
 echo ""
 
 OUTPUT_DIR=${OUTPUT_DIR:-/workspace/outputs/train/act_so101_runpod}
-if [ -d "$OUTPUT_DIR" ]; then
-  RESUME_TRAIN=true
-fi
-
 echo "Logging in to Weights & Biases..."
 {
     WANDB_API_KEY=$WANDB_API_KEY wandb login
@@ -65,7 +61,7 @@ lerobot-train \
   --num_workers=8 \
   --save_freq=5000 \
   --log_freq=100 \
-  --steps=100000 ${RESUME_TRAIN:+"--resume true"}
+  --steps=100000
 
 echo ""
 echo "=== Training Complete at $(date) ==="
