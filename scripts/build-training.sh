@@ -1,9 +1,13 @@
 #/bin/bash
 source /workspace/bench/r2b_safety_lab/scripts/.localrc
 
+echo "Installing dependencies..."
 pip install -e .[train]
+
+echo "Logging in to Hugging Face..."
 hf auth login --token $HF_TOKEN
 
+echo "Checking dataset"
 DATASET_DIR:="${DATASET_DIR:-/workspace/dataset/}"
 DATASET_NAME:="${DATASET_NAME:-dataset-trial-1}"
 
@@ -13,3 +17,6 @@ if [[ ! -d "$DATASET_DIR/$DATASET_NAME" ]]; then
 else
     echo "$DATASET_NAME already exists at $DATASET_DIR/$DATASET_NAME"
 fi
+
+
+echo "Ready to train!"
