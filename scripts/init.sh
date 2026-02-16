@@ -3,6 +3,7 @@
 # bash /workspace/bench/r2b_safety_lab/scripts/init.sh
 # bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
 #
+# Current docker: runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
 
 apt-get update
 

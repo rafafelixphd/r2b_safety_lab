@@ -13,6 +13,13 @@ if [ ! -d "${REPO_DIR}" ]; then
     exit 1
 fi
 
+if ! command -v ffmpeg &> /dev/null; then
+    echo "Installing ffmpeg..."
+    add-apt-repository ppa:ubuntuhandbook1/ffmpeg7
+    apt-get update
+    apt-get install -y ffmpeg
+fi
+
 echo "Installing dependencies..."
 {
     cd ${REPO_DIR} &&
