@@ -10,6 +10,7 @@ fi
 
 
 cd /workspace/bench/r2b_safety_lab
+git pull
 
 source scripts/.localrc
 
