@@ -4,15 +4,31 @@
 # bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
 #
 
+if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
+    echo "Error: /workspace/bench/r2b_safety_lab not found"
+    exit 1
+fi
+
 source /workspace/bench/r2b_safety_lab/scripts/.localrc
 
 
 echo "Installing dependencies..."
-cd /workspace/bench/r2b_safety_lab
-pip install -e .[train]
+{
+    cd /workspace/bench/r2b_safety_lab &&
+    pip install -e .[train]
+} || {
+    echo "[Error] Error installing dependencies"
+    exit 1
+}
+
 
 echo "Logging in to Hugging Face..."
-hf auth login --token $HF_TOKEN
+{
+    hf auth login --token $HF_TOKEN
+} || {
+    echo "[Error] Error logging in to Hugging Face"
+    exit 1
+}
 
 echo "Checking dataset"
 DATASET_DIR:="${DATASET_DIR:-/workspace/dataset/}"

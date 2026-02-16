@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 #
 # bash /workspace/bench/r2b_safety_lab/scripts/init.sh
 # bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
@@ -15,8 +15,12 @@ else
 fi
 
 echo "Updating r2b_safety_lab..."
-source /workspace/bench/r2b_safety_lab/scripts/.localrc
-cd /workspace/bench/r2b_safety_lab
-git pull
+{
+    source /workspace/bench/r2b_safety_lab/scripts/.localrc &&
+    cd /workspace/bench/r2b_safety_lab &&
+    git pull
+} || {
+    echo "Error updating r2b_safety_lab"
+}
 
 echo "Ready to work!"
