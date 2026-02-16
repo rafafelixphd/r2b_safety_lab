@@ -28,7 +28,6 @@ echo "Job name: act_so101_runpod_${TIMESTAMP}"
 echo ""
 
 OUTPUT_DIR=${OUTPUT_DIR:-/workspace/outputs/train/act_so101_runpod}
-RESUME_TRAIN=false
 if [ -d "$OUTPUT_DIR" ]; then
   RESUME_TRAIN=true
 fi
@@ -51,7 +50,7 @@ lerobot-train \
   --num_workers=8 \
   --save_freq=5000 \
   --log_freq=100 \
-  --steps=100000 ${RESUME_TRAIN:+"--resume"}
+  --steps=100000 ${RESUME_TRAIN:+"--resume true"}
 
 echo ""
 echo "=== Training Complete at $(date) ==="
