@@ -1,19 +1,15 @@
 #/bin/bash
-
-#ssh-keygen -t ed25519 -C "rafafelix.subscribe@gmail.com"
-cp /workspace/.ssh/* ~/.ssh/
-chmod 600 ~/.ssh/*
-
-if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
-    git clone git@github.com:rafafelixphd/r2b_safety_lab.git /workspace/bench/r2b_safety_lab --branch dev
-fi
-
-
-cd /workspace/bench/r2b_safety_lab
-git pull
-
-source scripts/.localrc
+source /workspace/bench/r2b_safety_lab/scripts/.localrc
 
 pip install -e .[train]
-
 hf auth login --token $HF_TOKEN
+
+DATASET_DIR:="${DATASET_DIR:-/workspace/dataset/}"
+DATASET_NAME:="${DATASET_NAME:-dataset-trial-1}"
+
+if [[ ! -d "$DATASET_DIR/$DATASET_NAME" ]]; then
+    echo "Downloading $DATASET_NAME..."
+    hf download $HF_USER/$DATASET_NAME --repo-type dataset --local-dir $DATASET_DIR
+else
+    echo "$DATASET_NAME already exists at $DATASET_DIR/$DATASET_NAME"
+fi
