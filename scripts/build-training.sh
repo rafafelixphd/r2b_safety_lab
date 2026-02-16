@@ -7,7 +7,6 @@
 source ~/.localrc
 
 REPO_DIR=${REPO_DIR:-/workspace/bench/r2b_safety_lab}
-export REPO_DIR
 
 if [ ! -d "${REPO_DIR}" ]; then
     echo "Error: ${REPO_DIR} not found"
@@ -33,8 +32,8 @@ echo "Logging in to Hugging Face..."
 }
     
 echo "Checking dataset"
-export DATASET_DIR:="${DATASET_DIR:-/workspace/dataset/}"
-export DATASET_NAME:="${DATASET_NAME:-dataset-trial-1}"
+DATASET_DIR:=${DATASET_DIR:-/workspace/dataset/}
+DATASET_NAME:=${DATASET_NAME:-dataset-trial-1}
 
 if [[ ! -d "$DATASET_DIR/$DATASET_NAME" ]]; then
     echo "Downloading $DATASET_NAME..."

@@ -24,8 +24,8 @@ echo "Copying SSH keys..."
 
 echo "Cloning r2b_safety_lab..."
 
-export REPO_GIT_REF:="${REPO_GIT_REF:-git@github.com:rafafelixphd/r2b_safety_lab.git}"
-export REPO_DIR:="${REPO_DIR:-/workspace/bench/r2b_safety_lab}"
+REPO_GIT_REF=${REPO_GIT_REF:-git@github.com:rafafelixphd/r2b_safety_lab.git}
+REPO_DIR=${REPO_DIR:-/workspace/bench/r2b_safety_lab}
 
 if [ ! -d "${REPO_DIR}" ]; then
     git clone ${REPO_GIT_REF} ${REPO_DIR} --branch dev
