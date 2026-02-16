@@ -5,9 +5,9 @@
 #
 echo "Copying SSH keys..."
 {
-    cp /workspace/.ssh/* ~/.ssh/
-    chmod 600 ~/.ssh/*
-    if [ ! -f "~/.ssh/id_ed25519" ]; then
+    cp /workspace/.ssh/id_ed25519 /root/.ssh/id_ed25519
+    chmod 600 /root/.ssh/id_ed25519
+    if [ ! -f "/root/.ssh/id_ed25519" ]; then
         echo "[Error] SSH key not found" && exit 1
     fi
 } || {
