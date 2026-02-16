@@ -39,6 +39,7 @@ if [ ! -d "/workspace/envs/.env" ]; then
     echo "Creating .env file..."
     python -m venv /workspace/envs/.env
     source /workspace/envs/.env/bin/activate
+    pip install --upgrade pip
 fi
 
 cp /workspace/bench/r2b_safety_lab/scripts/.localrc ~/.localrc

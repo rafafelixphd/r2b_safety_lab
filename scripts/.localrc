@@ -8,4 +8,9 @@ else
     export PS1='\[\033[36m\]\u\[\033[0m\]@\[\033[33m\]\W\[\033[0m\] \$ '
 fi
 
-source /workspace/envs/.env/bin/activate
+if [ -d "/workspace/envs/.env" ]; then
+    source /workspace/envs/.env/bin/activate
+    echo "✓ Loaded '.localrc'"
+else
+    echo "✗ .env not found"
+fi
