@@ -3,6 +3,13 @@
 # bash /workspace/bench/r2b_safety_lab/scripts/init.sh
 # bash /workspace/bench/r2b_safety_lab/scripts/build-training.sh
 #
+
+apt-get update
+
+if [ ! $(which htop) ]; then
+    apt-get install -y htop
+fi
+
 echo "Copying SSH keys..."
 {
     cp /workspace/.ssh/id_ed25519 /root/.ssh/id_ed25519
@@ -16,16 +23,20 @@ echo "Copying SSH keys..."
 }
 
 echo "Cloning r2b_safety_lab..."
-if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
-    git clone git@github.com:rafafelixphd/r2b_safety_lab.git /workspace/bench/r2b_safety_lab --branch dev
+
+REPO_GIT_REF:="${REPO_GIT_REF:-git@github.com:rafafelixphd/r2b_safety_lab.git}"
+REPO_DIR:="${REPO_DIR:-/workspace/bench/r2b_safety_lab}"
+
+if [ ! -d "${REPO_DIR}" ]; then
+    git clone ${REPO_GIT_REF} ${REPO_DIR} --branch dev
 else
-    echo "r2b_safety_lab already exists at /workspace/bench/r2b_safety_lab"
+    echo "r2b_safety_lab already exists at ${REPO_DIR}"
 fi
 
 echo "Updating r2b_safety_lab..."
 {
-    source /workspace/bench/r2b_safety_lab/scripts/.localrc &&
-    cd /workspace/bench/r2b_safety_lab &&
+    source ${REPO_DIR}/scripts/.localrc &&
+    cd ${REPO_DIR} &&
     git pull
 } || {
     echo "Error updating r2b_safety_lab"
@@ -38,5 +49,5 @@ if [ ! -d "/workspace/envs/.env" ]; then
     pip install --upgrade pip
 fi
 
-cp /workspace/bench/r2b_safety_lab/scripts/.localrc ~/.localrc
+cp ${REPO_DIR}/scripts/.localrc ~/.localrc
 echo "Ready to work!"

@@ -6,14 +6,16 @@
 
 source ~/.localrc
 
-if [ ! -d "/workspace/bench/r2b_safety_lab" ]; then
-    echo "Error: /workspace/bench/r2b_safety_lab not found"
+REPO_DIR:="${REPO_DIR:-/workspace/bench/r2b_safety_lab}"
+
+if [ ! -d "${REPO_DIR}" ]; then
+    echo "Error: ${REPO_DIR} not found"
     exit 1
 fi
 
 echo "Installing dependencies..."
 {
-    cd /workspace/bench/r2b_safety_lab &&
+    cd ${REPO_DIR} &&
     pip install -e .[train]
 } || {
     echo "[Error] Error installing dependencies"
@@ -28,7 +30,7 @@ echo "Logging in to Hugging Face..."
     echo "[Error] Error logging in to Hugging Face"
     exit 1
 }
-
+    
 echo "Checking dataset"
 DATASET_DIR:="${DATASET_DIR:-/workspace/dataset/}"
 DATASET_NAME:="${DATASET_NAME:-dataset-trial-1}"
