@@ -45,6 +45,8 @@ lerobot-train \
   --wandb.enable=true \
   --wandb.project=lerobot-so101 \
   --policy.repo_id="$HF_USER/policy-1" \
+  --policy.private=true \
+  --policy.push_to_hub=true \
   --batch_size=16 \
   --num_workers=8 \
   --save_freq=5000 \
