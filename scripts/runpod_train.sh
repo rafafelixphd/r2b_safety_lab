@@ -33,6 +33,8 @@ if [ -d "$OUTPUT_DIR" ]; then
   RESUME_TRAIN=true
 fi
 
+WANDB_API_KEY=$WANDB_API_KEY wandb login
+
 # Start training
 lerobot-train \
   --dataset.repo_id="$HF_USER/$DATASET_NAME" \
