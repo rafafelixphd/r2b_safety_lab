@@ -32,7 +32,22 @@ if [ -d "$OUTPUT_DIR" ]; then
   RESUME_TRAIN=true
 fi
 
-WANDB_API_KEY=$WANDB_API_KEY wandb login
+echo "Logging in to Weights & Biases..."
+{
+    WANDB_API_KEY=$WANDB_API_KEY wandb login
+} || {
+    echo "[Error] Error logging in to Weights & Biases"
+    exit 1
+}
+
+echo "Logging in to Hugging Face..."
+{
+    hf auth login --token $HF_TOKEN
+} || {
+    echo "[Error] Error logging in to Hugging Face"
+    exit 1
+}
+
 
 # Start training
 lerobot-train \
