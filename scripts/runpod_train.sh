@@ -9,6 +9,7 @@ source ~/.localrc
 echo "=== LeRobot RunPod Training ==="
 
 DATASET_NAME=${DATASET_NAME:-dataset-trial-1}
+HF_USER=${HF_USER:-rafafelixphd}
 
 # Create dataset symlink if it doesn't exist
 if [ ! -L "/root/.cache/huggingface/lerobot/$HF_USER/$DATASET_NAME" ]; then
