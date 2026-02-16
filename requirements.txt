@@ -12,6 +12,7 @@ gymnasium~=1.2.3
 placo~=0.9.20
 feetech-servo-sdk~=1.0.0
 av~=15.1.0
+usb
 
 # Mac users (get standard PyPI wheels, which support MPS acceleration)
 torch~=2.7.1; sys_platform == 'darwin'
