@@ -35,6 +35,12 @@ else
     log_warn "No SSH key found at ${WORKSPACE_DIR}/.ssh/id_ed25519. Git operations might fail."
 fi
 
+# Copy localrc for shell convenience
+if [ -f "${SCRIPT_DIR}/.localrc" ]; then
+    cp "${SCRIPT_DIR}/.localrc" ~/.localrc
+    log_success "Updated ~/.localrc"
+fi
+
 # Clone/Update Repository
 log_info "Setting up repository..."
 if [ ! -d "${REPO_DIR}" ]; then
@@ -57,12 +63,6 @@ fi
 
 # Activate venv for current session checks
 source "${VENV_DIR}/bin/activate"
-
-# Copy localrc for shell convenience
-if [ -f "${SCRIPT_DIR}/.localrc" ]; then
-    cp "${SCRIPT_DIR}/.localrc" ~/.localrc
-    log_success "Updated ~/.localrc"
-fi
 
 log_success "Initialization complete! Ready to work."
 log_info "Next: source ~/.localrc && bash ${SCRIPT_DIR}/build.sh"
