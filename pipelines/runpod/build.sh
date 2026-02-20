@@ -28,6 +28,12 @@ if ! command -v ffmpeg &> /dev/null; then
     # Ensure add-apt-repository exists
     if ! command -v add-apt-repository &> /dev/null; then
         apt-get update && apt-get install -y software-properties-common
+
+        # Source - https://stackoverflow.com/a/71349032
+        # apt-get install python3-apt --reinstall
+        # cd /usr/lib/python3/dist-packages
+        # sudo cp apt_pkg.cpython-38-x86_64-linux-gnu.so apt_pkg.so
+
     fi
     /usr/bin/add-apt-repository -y ppa:ubuntuhandbook1/ffmpeg7
     apt-get update
