@@ -13,8 +13,7 @@ else
     exit 1
 fi
 
-# Ensure ~/.localrc is sourced if it exists (for interactive checks)
-[ -f ~/.localrc ] && source ~/.localrc
+
 
 # Validate Repo Dir
 if [ ! -d "${REPO_DIR}" ]; then
@@ -22,6 +21,7 @@ if [ ! -d "${REPO_DIR}" ]; then
     exit 1
 fi
 
+deactivate
 log_info "Checking system dependencies..."
 if ! command -v ffmpeg &> /dev/null; then
     log_info "Installing ffmpeg..."
@@ -29,11 +29,14 @@ if ! command -v ffmpeg &> /dev/null; then
     if ! command -v add-apt-repository &> /dev/null; then
         apt-get update && apt-get install -y software-properties-common
     fi
-    add-apt-repository -y ppa:ubuntuhandbook1/ffmpeg7
+    /usr/bin/add-apt-repository -y ppa:ubuntuhandbook1/ffmpeg7
     apt-get update
     apt-get install -y ffmpeg
     log_success "ffmpeg installed."
 fi
+
+# Ensure ~/.localrc is sourced if it exists (for interactive checks)
+[ -f ~/.localrc ] && source ~/.localrc
 
 log_info "Installing Python dependencies..."
 cd "${REPO_DIR}"
