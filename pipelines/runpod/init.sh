@@ -63,16 +63,15 @@ if [ ! -d "${VENV_DIR}" ]; then
     log_info "pip upgraded";
 fi
 
-# Activate venv for current session checks
-source "${VENV_DIR}/bin/activate"
-touch """
+# Add venv activation to localrc for current session checks
+cat << EOF >> ~/.localrc
 if [ -d "${VENV_DIR}" ]; then
     source "${VENV_DIR}/bin/activate"
-    echo "✓ Loaded [${VENV_NAME}] venv"
+    echo "✓ Loaded [${VENV_NAME}] venv from ${VENV_DIR}"
 else
-    echo "✗ [${VENV_NAME}] venv not found"
+    echo "✗ [${VENV_NAME}] venv not found at ${VENV_DIR}"
 fi
-""" >> ~/.localrc
+EOF
 
 log_success "Initialization complete! Ready to work."
 log_info "Next: source ~/.localrc && bash ${SCRIPT_DIR}/build.sh"
