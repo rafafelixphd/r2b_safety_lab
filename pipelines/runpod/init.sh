@@ -55,14 +55,24 @@ fi
 # Virtual Environment Setup
 log_info "Setting up Python environment..."
 if [ ! -d "${VENV_DIR}" ]; then
-    log_info "Creating .env venv..."
+    log_info "Creating [${VENV_NAME}] venv..."
     python3 -m venv "${VENV_DIR}"
+    log_info "Environment created at ${VENV_DIR}";
     # Upgrade pip inside the venv directly
     "${VENV_DIR}/bin/pip" install --upgrade pip
+    log_info "pip upgraded";
 fi
 
 # Activate venv for current session checks
 source "${VENV_DIR}/bin/activate"
+touch """
+if [ -d "${VENV_DIR}" ]; then
+    source "${VENV_DIR}/bin/activate"
+    echo "✓ Loaded [${VENV_NAME}] venv"
+else
+    echo "✗ [${VENV_NAME}] venv not found"
+fi
+""" >> ~/.localrc
 
 log_success "Initialization complete! Ready to work."
 log_info "Next: source ~/.localrc && bash ${SCRIPT_DIR}/build.sh"
