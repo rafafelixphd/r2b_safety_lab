@@ -21,7 +21,7 @@ if [ ! -d "${REPO_DIR}" ]; then
     exit 1
 fi
 
-deactivate
+# deactivate
 log_info "Checking system dependencies..."
 if ! command -v ffmpeg &> /dev/null; then
     log_info "Installing ffmpeg..."
