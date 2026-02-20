@@ -73,5 +73,11 @@ else
 fi
 EOF
 
+source ~/.localrc
+
+log_info "Installing huggingface_hub..."
+pip install huggingface_hub
+log_success "huggingface_hub installed."
+
 log_success "Initialization complete! Ready to work."
 log_info "Next: source ~/.localrc && bash ${SCRIPT_DIR}/build.sh"
