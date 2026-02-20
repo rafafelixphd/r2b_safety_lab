@@ -28,6 +28,10 @@ if ! command -v ffmpeg &> /dev/null; then
     # Ensure add-apt-repository exists
     if ! command -v add-apt-repository &> /dev/null; then
         apt-get update && apt-get install -y software-properties-common
+        
+        cd /usr/lib/python3/dist-packages
+        mv apt_pkg.so{,.bkp}
+        cp apt_pkg.cpython-*.so apt_pkg.so
 
         # Source - https://stackoverflow.com/a/71349032
         # apt-get install python3-apt --reinstall
