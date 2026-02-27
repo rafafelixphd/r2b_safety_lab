@@ -1,4 +1,14 @@
-# for filename in $(ls -l /Users/rafaelfelix/.cache/huggingface/lerobot//rafafelixphd/dataset-trial-1/videos/observation.images.front/chunk-000/); do
+```bash
+lerobot-record --dataset.encoder_threads=1 \
+               --robot.type=so101_follower \
+               --robot.port=$FOLLOWER_PORT \
+               --robot.id=$FOLLOWER_ID \
+               --teleop.type=so101_leader \
+               --teleop.port=$LEADER_PORT \
+               --teleop.id=$LEADER_ID --robot.cameras='$PS4EYE_CAMERA' --display_data=true --dataset.push_to_hub=false --dataset.single_task='Grab items' --dataset.repo_id='$HF_USER/dataset-trial-2' --resume false --dataset.num_episodes=2
+```
+
+<!-- # for filename in $(ls -l /Users/rafaelfelix/.cache/huggingface/lerobot//rafafelixphd/dataset-trial-1/videos/observation.images.front/chunk-000/); do
 #     ffmpeg -i $filename -filter:v "crop=1724:808:0:0, scale=224:224" -c:v libx264 -crf 18 observation.images.front_left.mp4
 # done
 
@@ -45,4 +55,4 @@
 #   --policy.device=cuda \
 #   --policy.repo_id="rafafelixphd/my_policy" \
 #   --wandb.enable=true \
-#   --batch_size=1
+#   --batch_size=1 -->
