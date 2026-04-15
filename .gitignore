@@ -4,6 +4,7 @@ build/
 log/
 .catkin_tools/
 outputs/
+.env*
 
 # --- Python ---
 __pycache__/
